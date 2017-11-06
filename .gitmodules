@@ -1,0 +1,61 @@
+[submodule "Layouts/website/submodules/jquery-dateFormat"]
+	path = Layouts/website/submodules/jquery-dateFormat
+	url = https://github.com/phstc/jquery-dateFormat.git
+	ignore = dirty
+[submodule "Layouts/website/submodules/jquery-cookie"]
+	path = Layouts/website/submodules/jquery-cookie
+	url = https://github.com/carhartl/jquery-cookie.git
+	ignore = dirty
+[submodule "Layouts/website/submodules/bootstrap-timepicker"]
+	path = Layouts/website/submodules/bootstrap-timepicker
+	url = https://github.com/jdewit/bootstrap-timepicker.git
+	ignore = dirty
+[submodule "Layouts/website/submodules/angularjs"]
+	path = Layouts/website/submodules/angularjs
+	url = https://github.com/accuvally/angularjs.git
+	ignore = dirty
+[submodule "Layouts/website/submodules/bootstrap-datepicker"]
+	path = Layouts/website/submodules/bootstrap-datepicker
+	url = https://github.com/eternicode/bootstrap-datepicker.git
+	ignore = dirty
+[submodule "Layouts/website/submodules/Font-Awesome"]
+	path = Layouts/website/submodules/Font-Awesome
+	url = https://github.com/FortAwesome/Font-Awesome.git
+	ignore = dirty
+[submodule "Layouts/website/submodules/plupload"]
+	path = Layouts/website/submodules/plupload
+	url = https://github.com/moxiecode/plupload.git
+	ignore = dirty
+[submodule "Layouts/website/submodules/imperavi-redactor-widget"]
+	path = Layouts/website/submodules/imperavi-redactor-widget
+	url = https://github.com/yiiext/imperavi-redactor-widget.git
+	ignore = dirty
+[submodule "Layouts/website/submodules/bootstrap-tagsinput"]
+	path = Layouts/website/submodules/bootstrap-tagsinput
+	url = https://github.com/TimSchlechter/bootstrap-tagsinput.git
+	ignore = dirty
+[submodule "Layouts/website/submodules/Jcrop"]
+	path = Layouts/website/submodules/Jcrop
+	url = https://github.com/tapmodo/Jcrop.git
+	ignore = dirty
+[submodule "Layouts/website/submodules/angular-form-builder"]
+	path = Layouts/website/submodules/angular-form-builder
+	url = https://github.com/accuvally/angular-form-builder.git
+	ignore = dirty
+[submodule "Layouts/website/submodules/ui-router"]
+	path = Layouts/website/submodules/ui-router
+	url = https://github.com/angular-ui/ui-router.git
+	ignore = dirty
+[submodule "Layouts/website/submodules/angular-validator"]
+	path = Layouts/website/submodules/angular-validator
+	url = https://github.com/accuvally/angular-validator.git
+	ignore = dirty
+[submodule "Layouts/website/submodules/angular-strap"]
+	path = Layouts/website/submodules/angular-strap
+	url = https://github.com/accuvally/angular-strap
+[submodule "Layouts/website/submodules/respond"]
+	path = Layouts/website/submodules/respond
+	url = https://github.com/scottjehl/Respond.git
+[submodule "Layouts/website/submodules/jquery-placeholder"]
+	path = Layouts/website/submodules/jquery-placeholder
+	url = https://github.com/mathiasbynens/jquery-placeholder

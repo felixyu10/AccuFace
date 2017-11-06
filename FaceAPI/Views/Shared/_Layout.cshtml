@@ -1,0 +1,22 @@
+﻿@using System.Web.Optimization
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <title>AccuFace</title>
+    <link rel="icon" type="image/x-icon" href="~/Images/icon.png" />
+    @Scripts.Render("~/bundles/base/js")
+    @Styles.Render("~/Content/css")
+</head>
+<body ng-app="myFaceApp" class="ng-cloak">
+    @Html.Partial("~/Views/Shared/_Header.cshtml")
+    <div class="container" id="body-content">
+        @RenderBody()
+    </div>
+    @Html.Partial("~/Views/Shared/_Footer.cshtml")
+
+    @RenderSection("NgScript", false)
+</body>
+</html>

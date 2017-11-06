@@ -1,0 +1,38 @@
+﻿@using System.Web.Optimization
+
+
+@Html.Partial("~/Views/Shared/_Bar.cshtml")
+
+<div ng-controller="User">
+
+    <div class="loadmore">
+        <div ng-show="loaderMoreupl" ng-class="result">
+            <img src="~/Content/ng-loader.gif" /> {{uplMessage}}
+        </div>
+    </div>
+    <div class="clearfix"></div>
+
+    <div class="col-xs-12 m-b-20">
+        <h4>
+            <b>新增使用者</b>
+        </h4>
+        <form novalidate name="f1">
+            <div class="form-group m-b-20">
+                <input type="text" name="userName" placeholder="名稱" class="form-control" required />
+            </div>
+
+            <div class="form-group m-b-20">
+                <b>照片</b>
+                <br>
+                <input type="file" name="file" accept="image/*" onchange="angular.element(this).scope().selectCandidateFileforUpload(this.files)" required />
+            </div>
+
+        </form>
+    </div>
+
+
+</div>
+
+@section NgScript{
+    <script src="~/Scripts/mine/User.js"></script>
+}
