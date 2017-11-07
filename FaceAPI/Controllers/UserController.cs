@@ -4,7 +4,6 @@ using Microsoft.ProjectOxford.Face;
 using Microsoft.ProjectOxford.Face.Contract;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -14,14 +13,13 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using FaceAPI.Web.Service;
-using System.Web.Security;
+using FaceAPI.Web.Common.Helper;
 
 namespace FaceAPI.Web.Controllers
 {
-    [Authorize]
     public class UserController : BaseController
     {
-        private static string directory = ConfigurationManager.AppSettings["UploadedDirectory"];
+        private static string directory = AppHelper.GetWebConfigSetting("UploadedDirectory");
         private FaceDetectionService service = new FaceDetectionService();
         private FaceModel faceModel = new FaceModel();
         private bool isComplete = false;
@@ -83,6 +81,7 @@ namespace FaceAPI.Web.Controllers
                     {
                         string ErrorCode = ex.ErrorCode;
                     }
+
                     //User Binding原圖
                     using (Stream imgStream = System.IO.File.OpenRead(fullImgPath))
                     {

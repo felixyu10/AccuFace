@@ -4,14 +4,15 @@ using System.Drawing;
 using System.IO;
 using Microsoft.ProjectOxford.Face;
 using Microsoft.ProjectOxford.Face.Contract;
+using FaceAPI.Web.Common.Helper;
 
 namespace FaceAPI.Web.Service
 {
     public class FaceDetectionService
     {
-        private static string personGroupId = ConfigurationManager.AppSettings["PersonGroupId"];
-        private static string serviceKey = ConfigurationManager.AppSettings["FaceserviceKey"];
-        private static string serviceEndPoint = ConfigurationManager.AppSettings["FaceServiceEndPoint"];
+        private static string personGroupId = AppHelper.GetWebConfigSetting("PersonGroupId");
+        private static string serviceKey = AppHelper.GetWebConfigSetting("FaceserviceKey");
+        private static string serviceEndPoint = AppHelper.GetWebConfigSetting("FaceServiceEndPoint");
         private IFaceServiceClient faceServiceClient = new FaceServiceClient(serviceKey, serviceEndPoint);
 
         public Bitmap CropBitmap(Bitmap bitmap, int cropX, int cropY, int cropWidth, int cropHeight)

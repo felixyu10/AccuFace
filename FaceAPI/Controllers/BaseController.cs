@@ -17,6 +17,7 @@ using FaceAPI.Web.Service;
 
 namespace FaceAPI.Web.Controllers
 {
+    [Authorize]
     public class BaseController : Controller
     {
        

@@ -1,27 +1,17 @@
-﻿using FaceAPI.Web.Helper;
+﻿using FaceAPI.Web.Common.Cache;
+using FaceAPI.Web.Common.Enum;
 using FaceAPI.Web.Models;
-using Microsoft.ProjectOxford.Face;
-using Microsoft.ProjectOxford.Face.Contract;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Configuration;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using FaceAPI.Web.Service;
 using System.Web.Security;
 
 namespace FaceAPI.Web.Controllers
 {
+    [AllowAnonymous]
     public class AccountController : BaseController
     {
         [HttpGet]
-        [AllowAnonymous]
         public ActionResult Login()
         {
             return View();
@@ -31,8 +21,17 @@ namespace FaceAPI.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Login(AccountModel.LoginModel model)
         {
-            if (model.Account == "admin" && model.Password == "accuvally")
+            if ((model.Account == "admin" || model.Account == "felix") && model.Password == "accuvally")
             {
+                if (model.Account == "admin" && model.Password == "accuvally")
+                {
+
+                    int login = RedisCache.GetCache<int>(CacheNameEnum.FaceDetection, "");
+                    login++;
+                    RedisCache.SetCache(CacheNameEnum.FaceDetection, "", login, new TimeSpan(365, 0, 0, 0));
+                }
+
+
                 FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(1,
                     model.Account,
                     DateTime.UtcNow.AddHours(8),
@@ -51,16 +50,12 @@ namespace FaceAPI.Web.Controllers
         }
 
         [HttpGet]
-        [AllowAnonymous]
         public ActionResult Logout()
         {
-            //清除所有的 session
             Session.RemoveAll();
-            //清除Session中的資料
             Session.Abandon();
-            //登出表單驗證
             FormsAuthentication.SignOut();
-            //導至登入頁
+
             return RedirectToAction("Login");
         }
 

@@ -16,7 +16,6 @@ namespace FaceAPI.Web
         void Application_Start(object sender, EventArgs e)
         {
             BundleConfig.RegisterBundles(BundleTable.Bundles);
-            // Code that runs on application startup
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
             RouteConfig.RegisterRoutes(RouteTable.Routes);            

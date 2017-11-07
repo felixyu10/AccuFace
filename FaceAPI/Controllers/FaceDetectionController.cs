@@ -14,26 +14,27 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using FaceAPI.Web.Service;
+using FaceAPI.Web.Common.Helper;
 
 namespace FaceAPI.Web.Controllers
 {
-    [Authorize]
     public class FaceDetectionController : BaseController
     {
-        private static string directory = ConfigurationManager.AppSettings["UploadedDirectory"];
-        //+ '/' + DateTime.UtcNow.AddHours(8).ToString("yyyyMMdd");
+        private static string directory = AppHelper.GetWebConfigSetting("UploadedDirectory");
         private static string uplImageName = string.Empty;
+        private int maxImageSize = 450;
         private ObservableCollection<FaceDetectionModel> detectedFaces = new ObservableCollection<FaceDetectionModel>();
         private ObservableCollection<FaceDetectionModel> resultCollection = new ObservableCollection<FaceDetectionModel>();
-        private int maxImageSize = 450;
         private FaceDetectionService service = new FaceDetectionService();
         private FaceModel faceModel = new FaceModel();
 
+        [HttpGet]
         public ActionResult Index()
         {
             return View();
         }
 
+        [HttpGet]
         public ActionResult Webcam()
         {
             return View();
@@ -74,7 +75,7 @@ namespace FaceAPI.Web.Controllers
                 }
                 catch (Exception e)
                 {
-                    message = "上傳失敗！";
+                    message = e.Message;
                 }
             }
             return new JsonResult
