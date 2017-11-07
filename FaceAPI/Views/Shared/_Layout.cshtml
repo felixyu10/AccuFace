@@ -1,14 +1,22 @@
-﻿@using System.Web.Optimization
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <title>AccuFace</title>
     <link rel="icon" type="image/x-icon" href="~/Images/icon.png" />
-    @Scripts.Render("~/bundles/base/js")
-    @Styles.Render("~/Content/css")
+
+    @Html.Partial("~/Views/Shared/_Bundle.cshtml")
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-109273357-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-109273357-1');
+    </script>
+
+
 </head>
 <body ng-app="myFaceApp" class="ng-cloak">
 
@@ -18,7 +26,7 @@
 
         @if (User.Identity.IsAuthenticated)
         {
-            @Html.Partial("~/Views/Shared/_Bar.cshtml")
+            @Html.Partial("~/Views/Shared/_MenuBar.cshtml")
         }
 
         @RenderBody()

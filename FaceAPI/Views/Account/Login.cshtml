@@ -8,7 +8,7 @@
             <div class="panel-title">登入</div>
         </div>
         <div class="panel-body">
-            @using (Html.BeginForm("Login", "User", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { enctype = "multipart/form-data" }))
             {
                 @Html.AntiForgeryToken()
                 @Html.ValidationSummary()

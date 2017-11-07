@@ -19,16 +19,18 @@
         $scope.result = "color-green";
 
         if ($("[name=userName]").val() == "") {
-            alert("請輸入名稱");
+            alertify.error("請輸入名稱");
             $("[name=file]").val("")
             return;
         }
-
-        var uploaderUrl = "/User/UploadPhoto?userName=" + $("[name=userName]").val();
+        gtag('event', 'CreateUser');
+        var uploaderUrl = "/User/Create?userName=" + $("[name=userName]").val();
         var fileSave = FileUploadService.UploadFile($scope.SelectedFileForUpload, uploaderUrl);
         fileSave.then(function (response) {
             $scope.loaderMoreupl = false;
-            $scope.uplMessage = '新增成功';
+            alertify.success("新增成功");
+            $("[name=userName]").val("")
+            $("[name=file]").val("")
         },
         function (error) {
             console.warn("Error: " + error);

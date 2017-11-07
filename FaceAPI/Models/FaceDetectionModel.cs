@@ -32,10 +32,13 @@ namespace FaceAPI.Web.Models
 
         public int Top { get; set; }
 
-        public string IsSmiling { get; set; }
+        //public string IsSmiling { get; set; }
 
         public string Emotion { get; set; }
 
+        public string Hair { get; set; }
+
+        public double? Confidence { get; set; }
         #endregion Properties
 
 

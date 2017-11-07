@@ -25,7 +25,9 @@ namespace FaceAPI.Web.Controllers
         private FaceDetectionService service = new FaceDetectionService();
         private FaceModel faceModel = new FaceModel();
         private bool isComplete = false;
+        private CreatePersonResult person = new CreatePersonResult();
         private Guid? personId = null;
+        private Person[] persons = null;
 
         [HttpGet]
         public ActionResult Create()
@@ -39,6 +41,7 @@ namespace FaceAPI.Web.Controllers
             try
             {
                 PersonGroup group = await faceModel.serviceClient.GetPersonGroupAsync(faceModel.personGroupId);
+                persons = await faceModel.serviceClient.ListPersonsAsync(faceModel.personGroupId);
             }
             catch (FaceAPIException ex)
             {
@@ -51,7 +54,7 @@ namespace FaceAPI.Web.Controllers
 
             string message = string.Empty;
             string fileName = string.Empty;
-            bool flag = true;
+            bool flag = false;
 
             HttpFileCollection fileRequest = System.Web.HttpContext.Current.Request.Files;
             if (fileRequest != null)
@@ -59,14 +62,14 @@ namespace FaceAPI.Web.Controllers
                 HttpPostedFileBase file = Request.Files[0];
                 fileName = DateTime.UtcNow.AddHours(8).ToString("yyyyMMddHHmmss") + Path.GetExtension(file.FileName);
                 int size = file.ContentLength;
-                CreatePersonResult person = new CreatePersonResult();
+
                 try
                 {
                     file.SaveAs(Path.Combine(Server.MapPath(directory), fileName));
                     string fullImgPath = Server.MapPath(directory) + '/' + fileName;
                     try
                     {
-                        await GetDetectedFaces(fileName);
+                        await GetDetectedFaces(fileName, userName);
 
                         while (true)
                         {
@@ -75,39 +78,31 @@ namespace FaceAPI.Web.Controllers
                                 break;
                             }
                         }
-
-                        if (personId == null)
-                        {
-                            person = await faceModel.serviceClient.CreatePersonAsync(faceModel.personGroupId, userName);
-                            personId = person.PersonId;
-                        }
                     }
                     catch (FaceAPIException ex)
                     {
                         string ErrorCode = ex.ErrorCode;
                     }
-                    using (Stream img = System.IO.File.OpenRead(fullImgPath))
+                    //User Binding原圖
+                    using (Stream imgStream = System.IO.File.OpenRead(fullImgPath))
                     {
                         try
                         {
-                            await faceModel.serviceClient.AddPersonFaceAsync(faceModel.personGroupId, personId.Value, img);
-                            await Task.Delay(500);
+                            await faceModel.serviceClient.AddPersonFaceAsync(faceModel.personGroupId, personId.Value, imgStream);
                             await faceModel.serviceClient.TrainPersonGroupAsync(faceModel.personGroupId);
-
                             message = "新增成功！";
-
+                            flag = true;
                         }
                         catch (FaceAPIException ex)
                         {
                             message = ex.ErrorMessage;
-                            flag = false;
                         }
                     }
 
                 }
                 catch (Exception)
                 {
-                    message = "上傳失敗！";
+                    message = "發生錯誤！";
                 }
             }
             return new JsonResult
@@ -122,7 +117,7 @@ namespace FaceAPI.Web.Controllers
         }
 
         [HttpGet]
-        public async Task GetDetectedFaces(string uplImageName)
+        public async Task GetDetectedFaces(string uplImageName, string userName)
         {
             string fullImgPath = Server.MapPath(directory) + '/' + uplImageName;
             string queryFaceImageUrl = directory + '/' + uplImageName;
@@ -166,17 +161,45 @@ namespace FaceAPI.Web.Controllers
 
                                 try
                                 {
-                                    IdentifyResult[] identify = await faceModel.serviceClient.IdentifyAsync(faceModel.personGroupId, faceIds);
-
-
-                                    if (identify[0].Candidates.Length > 0)
+                                    //Group沒有任何User
+                                    if (persons != null && persons.Any())
                                     {
-                                        for (int j = 0; j < identify[0].Candidates.Length; j++)
-                                        {
-                                            personId = identify[0].Candidates[j].PersonId;
+                                        IdentifyResult[] identify = await faceModel.serviceClient.IdentifyAsync(faceModel.personGroupId, faceIds);
 
+                                        //User存在
+                                        if (identify[0].Candidates.Length > 0)
+                                        {
+                                            for (int j = 0; j < identify[0].Candidates.Length; j++)
+                                            {
+                                                personId = identify[0].Candidates[j].PersonId;
+
+                                            }
+                                        }
+                                        //新增User
+                                        else
+                                        {
+                                            person = await faceModel.serviceClient.CreatePersonAsync(faceModel.personGroupId, userName);
+                                            personId = person.PersonId;
                                         }
                                     }
+                                    //新增User
+                                    else
+                                    {
+
+                                        person = await faceModel.serviceClient.CreatePersonAsync(faceModel.personGroupId, userName);
+                                        personId = person.PersonId;
+                                    }
+
+                                    //User Binding裁切後的圖
+                                    //if (personId != null)
+                                    //{
+                                    //    using (Stream imgStream = System.IO.File.OpenRead(cropImgFullPath))
+                                    //    {
+                                    //        await faceModel.serviceClient.AddPersonFaceAsync(faceModel.personGroupId, personId.Value, imgStream);
+                                    //        await Task.Delay(500);
+                                    //        await faceModel.serviceClient.TrainPersonGroupAsync(faceModel.personGroupId);
+                                    //    }
+                                    //}
                                 }
                                 catch (FaceAPIException ex)
                                 {
@@ -184,13 +207,7 @@ namespace FaceAPI.Web.Controllers
                                     string ErrorMessage = ex.ErrorMessage;
                                     //do exception work
                                 }
-
-
-                                if (cropFace != null)
-                                {
-                                    cropFace.Dispose();
-                                }
-
+                                cropFace.Dispose();
                             }
                         }
 

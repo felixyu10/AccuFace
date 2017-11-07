@@ -1,7 +1,5 @@
 ﻿angular.module('myFaceApp', [])
 
-
-
 .controller('faceDetection', function ($scope, FileUploadService) {
 
     $scope.DetectedResultsMessage = '';
@@ -13,6 +11,7 @@
 
     //File Select & Save 
     $scope.selectCandidateFileforUpload = function (file) {
+        gtag('event', 'PhotoDetection');
         $('.loadmore').css("display", "block");
         $scope.SelectedFileForUpload = file;
         $scope.loaderMoreupl = true;
@@ -106,10 +105,22 @@
 
 .controller('webcam', function ($scope, FileUploadService) {
 
+    var width;
+    var height;
+
+    if ($(window).width() >= 768) {
+        width = 480;
+        height = 400;
+    }
+    else {
+        width = 400;
+        height = 320;
+    }
+
     $(window).load(function () {
         Webcam.set({
-            width: 480,
-            height: 400,
+            width: width,
+            height: height,
             image_format: 'jpeg',
             jpeg_quality: 100,
             fps: 60
@@ -117,6 +128,20 @@
         Webcam.attach('#webcam');
 
     });
+
+    $(window).resize(function () {
+        if ($(window).width() >= 768) {
+            width = 480;
+            height = 400;
+        }
+        else {
+            width = 400;
+            height = 320;
+        }
+        $("video").css("width", width + "px")
+        $("video").css("height", height + "px")
+    });
+
     $scope.DetectedResultsMessage = '';
     $scope.SelectedFileForUpload = null;
     $scope.Uploaded = [];
@@ -129,7 +154,7 @@
 
         //Webcam截圖
         Webcam.snap(function (data_uri) {
-
+            gtag('event', 'WebcamDetection');
             var uploaderUrl = "/FaceDetection/Capture";
             var capture = FileUploadService.Capture(uploaderUrl, data_uri);
             capture.then(function (response) {

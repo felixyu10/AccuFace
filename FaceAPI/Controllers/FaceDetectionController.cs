@@ -117,7 +117,7 @@ namespace FaceAPI.Web.Controllers
                                 FaceAttributeType.Gender,
                                 FaceAttributeType.Age,
                                 FaceAttributeType.Emotion,
-                                FaceAttributeType.Smile
+                                FaceAttributeType.Hair
                             });
 
 
@@ -146,6 +146,7 @@ namespace FaceAPI.Web.Controllers
 
                                 Guid[] faceIds = new Guid[] { face.FaceId };
                                 string personName = "未知";
+                                double? confidence = null;
                                 try
                                 {
                                     IdentifyResult[] identify = await faceModel.serviceClient.IdentifyAsync(faceModel.personGroupId, faceIds);
@@ -155,30 +156,34 @@ namespace FaceAPI.Web.Controllers
                                     {
                                         for (int j = 0; j < identify[0].Candidates.Length; j++)
                                         {
-                                            Guid personId = identify[0].Candidates[j].PersonId;
-                                            Person person = await faceModel.serviceClient.GetPersonAsync(faceModel.personGroupId, personId);
-                                            personName = person.Name;
-
-                                            using (Stream img = System.IO.File.OpenRead(cropImgFullPath))
+                                            confidence = identify[0].Candidates[j].Confidence;
+                                            if (confidence > 0.7)
                                             {
-                                                try
-                                                {
-                                                    await faceModel.serviceClient.AddPersonFaceAsync(faceModel.personGroupId, person.PersonId, img);
-                                                    await Task.Delay(500);
-                                                    await faceModel.serviceClient.TrainPersonGroupAsync(faceModel.personGroupId);
-                                                }
-                                                catch (FaceAPIException ex)
-                                                {
+                                                Guid personId = identify[0].Candidates[j].PersonId;
+                                                Person person = await faceModel.serviceClient.GetPersonAsync(faceModel.personGroupId, personId);
+                                                personName = person.Name;
 
+                                                //User Binding原圖
+                                                if (faces.Count() == 1)
+                                                {
+                                                    using (Stream img = System.IO.File.OpenRead(fullImgPath))
+                                                    {
+                                                        await faceModel.serviceClient.AddPersonFaceAsync(faceModel.personGroupId, person.PersonId, img);
+                                                        await faceModel.serviceClient.TrainPersonGroupAsync(faceModel.personGroupId);
+                                                    }
+                                                }
+                                                //User Binding裁切圖
+                                                else
+                                                {
+                                                    using (Stream img = System.IO.File.OpenRead(cropImgFullPath))
+                                                    {
+                                                        await faceModel.serviceClient.AddPersonFaceAsync(faceModel.personGroupId, person.PersonId, img);
+                                                        await faceModel.serviceClient.TrainPersonGroupAsync(faceModel.personGroupId);
+                                                    }
                                                 }
                                             }
                                         }
                                     }
-                                    else
-                                    {
-                                        personName = "未知";
-                                    }
-
                                 }
                                 catch (FaceAPIException ex)
                                 {
@@ -186,12 +191,7 @@ namespace FaceAPI.Web.Controllers
                                     string ErrorMessage = ex.ErrorMessage;
                                     //do exception work
                                 }
-
-
-                                if (cropFace != null)
-                                {
-                                    cropFace.Dispose();
-                                }
+                                cropFace.Dispose();
 
                                 detectedFaces.Add(new FaceDetectionModel()
                                 {
@@ -205,8 +205,10 @@ namespace FaceAPI.Web.Controllers
                                     Height = face.FaceRectangle.Height,
                                     Gender = face.FaceAttributes.Gender == "male" ? "男" : "女",
                                     Age = string.Format("{0:#}歲", face.FaceAttributes.Age),
-                                    IsSmiling = face.FaceAttributes.Smile > 0.0 ? "有" : "沒有",
-                                    Emotion = face.FaceAttributes.Emotion.ToRankedList().OrderByDescending(o => o.Value).FirstOrDefault().Key
+                                    //IsSmiling = face.FaceAttributes.Smile > 0.0 ? "有" : "沒有",
+                                    Emotion = face.FaceAttributes.Emotion.ToRankedList().OrderByDescending(o => o.Value).FirstOrDefault().Key,
+                                    Hair = face.FaceAttributes.Hair.HairColor.OrderByDescending(o => o.Confidence).FirstOrDefault().Color.ToString(),
+                                    Confidence = confidence
                                 });
 
                             }
