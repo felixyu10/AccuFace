@@ -14,23 +14,27 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using FaceAPI.Web.Service;
+using System.Web.Security;
 
 namespace FaceAPI.Web.Controllers
 {
-    public class UserController : Controller
+    [Authorize]
+    public class UserController : BaseController
     {
         private static string directory = ConfigurationManager.AppSettings["UploadedDirectory"];
         private FaceDetectionService service = new FaceDetectionService();
         private FaceModel faceModel = new FaceModel();
         private bool isComplete = false;
         private Guid? personId = null;
+
+        [HttpGet]
         public ActionResult Create()
         {
             return View();
         }
 
         [HttpPost]
-        public async Task<JsonResult> UploadPhoto(string userName)
+        public async Task<JsonResult> Create(string userName)
         {
             try
             {
@@ -47,14 +51,12 @@ namespace FaceAPI.Web.Controllers
 
             string message = string.Empty;
             string fileName = string.Empty;
-            string actualFileName = string.Empty;
             bool flag = true;
 
-            HttpFileCollection fileRequested = System.Web.HttpContext.Current.Request.Files;
-            if (fileRequested != null)
+            HttpFileCollection fileRequest = System.Web.HttpContext.Current.Request.Files;
+            if (fileRequest != null)
             {
                 HttpPostedFileBase file = Request.Files[0];
-                actualFileName = file.FileName;
                 fileName = DateTime.UtcNow.AddHours(8).ToString("yyyyMMddHHmmss") + Path.GetExtension(file.FileName);
                 int size = file.ContentLength;
                 CreatePersonResult person = new CreatePersonResult();
@@ -207,5 +209,6 @@ namespace FaceAPI.Web.Controllers
                 }
             }
         }
+
     }
 }

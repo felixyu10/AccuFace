@@ -9,7 +9,9 @@ namespace FaceAPI.Web
         public static void RegisterBundles(BundleCollection bundles)
         {
             bundles.Add(new ScriptBundle("~/bundles/base/js").Include(
-                                        "~/Scripts/jquery-1.8.3.min.js",
+                                        "~/Scripts/jquery/jquery-1.8.3.min.js",
+                                        "~/Scripts/jquery/jquery.validate.min.js",
+                                        "~/Scripts/jquery/jquery.validate.unobtrusive.min.js",
                                         "~/Scripts/modernizr-2.6.2.js",
                                         "~/Scripts/bootstrap.min.js",
                                         "~/Scripts/angular/angular.min.js"));

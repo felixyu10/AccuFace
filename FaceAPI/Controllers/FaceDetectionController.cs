@@ -17,7 +17,8 @@ using FaceAPI.Web.Service;
 
 namespace FaceAPI.Web.Controllers
 {
-    public class FaceDetectionController : Controller
+    [Authorize]
+    public class FaceDetectionController : BaseController
     {
         private static string directory = ConfigurationManager.AppSettings["UploadedDirectory"];
         //+ '/' + DateTime.UtcNow.AddHours(8).ToString("yyyyMMdd");
@@ -55,14 +56,12 @@ namespace FaceAPI.Web.Controllers
             }
             string message = string.Empty;
             string fileName = string.Empty;
-            string actualFileName = string.Empty;
             bool flag = false;
             //Requested File Collection
-            HttpFileCollection fileRequested = System.Web.HttpContext.Current.Request.Files;
-            if (fileRequested != null)
+            HttpFileCollection fileRequest = System.Web.HttpContext.Current.Request.Files;
+            if (fileRequest != null)
             {
                 HttpPostedFileBase file = Request.Files[0];
-                actualFileName = file.FileName;
                 fileName = DateTime.UtcNow.AddHours(8).ToString("yyyyMMddHHmmss") + Path.GetExtension(file.FileName);
                 int size = file.ContentLength;
 

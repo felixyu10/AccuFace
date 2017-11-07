@@ -11,8 +11,16 @@
     @Styles.Render("~/Content/css")
 </head>
 <body ng-app="myFaceApp" class="ng-cloak">
+
     @Html.Partial("~/Views/Shared/_Header.cshtml")
+
     <div class="container" id="body-content">
+
+        @if (User.Identity.IsAuthenticated)
+        {
+            @Html.Partial("~/Views/Shared/_Bar.cshtml")
+        }
+
         @RenderBody()
     </div>
     @Html.Partial("~/Views/Shared/_Footer.cshtml")

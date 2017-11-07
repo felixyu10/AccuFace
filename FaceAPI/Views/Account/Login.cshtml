@@ -1,0 +1,41 @@
+﻿@using FaceAPI.Web.Models;
+@model AccountModel.LoginModel
+
+
+<div class="col-md-4 col-md-offset-4"  ng-controller="User">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="panel-title">登入</div>
+        </div>
+        <div class="panel-body">
+            @using (Html.BeginForm("Login", "User", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary()
+
+                @*@Html.HiddenFor(model => model.ReturnUrl, new { @Value = ViewBag.ReturnUrl })*@
+                <fieldset>
+                    <div class="form-group">
+                            @Html.TextBoxFor(model => model.Account, new { @class = "form-control", placeholder = "帳號", @style="width:100%" })
+                            @Html.ValidationMessageFor(model => model.Account)
+                    </div>
+                    <div class="form-group">
+                            @Html.PasswordFor(model => model.Password, new { @class = "form-control", placeholder = "密碼", @style = "width:100%" })
+                            @Html.ValidationMessageFor(model => model.Password)
+    
+                    </div>
+                    <input type="submit" name="button" value="登入" class="btn btn-primary">
+                </fieldset>
+
+            }
+
+        </div>
+    </div>
+</div>
+
+
+@section NgScript{
+    <script src="~/Scripts/main/User.js"></script>
+}
+
+
