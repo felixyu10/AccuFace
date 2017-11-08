@@ -750,11 +750,11 @@
             // flip container horiz (mirror mode) if desired
             if (this.params.flip_horiz) {
                 var sty = this.container.style;
-                sty.webkitTransform = 'scaleX(-1)';
-                sty.mozTransform = 'scaleX(-1)';
-                sty.msTransform = 'scaleX(-1)';
-                sty.oTransform = 'scaleX(-1)';
-                sty.transform = 'scaleX(-1)';
+                //sty.webkitTransform = 'scaleX(-1)';
+                //sty.mozTransform = 'scaleX(-1)';
+                //sty.msTransform = 'scaleX(-1)';
+                //sty.oTransform = 'scaleX(-1)';
+                //sty.transform = 'scaleX(-1)';
                 sty.filter = 'FlipH';
                 sty.msFilter = 'FlipH';
             }

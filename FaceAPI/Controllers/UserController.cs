@@ -22,7 +22,6 @@ namespace FaceAPI.Web.Controllers
         private static string directory = AppHelper.GetWebConfigSetting("UploadedDirectory");
         private FaceDetectionService service = new FaceDetectionService();
         private FaceModel faceModel = new FaceModel();
-        private bool isComplete = false;
         private CreatePersonResult person = new CreatePersonResult();
         private Guid? personId = null;
         private Person[] persons = null;
@@ -57,51 +56,44 @@ namespace FaceAPI.Web.Controllers
             HttpFileCollection fileRequest = System.Web.HttpContext.Current.Request.Files;
             if (fileRequest != null)
             {
-                HttpPostedFileBase file = Request.Files[0];
-                fileName = DateTime.UtcNow.AddHours(8).ToString("yyyyMMddHHmmss") + Path.GetExtension(file.FileName);
-                int size = file.ContentLength;
-
-                try
+                for (int i = 0; i < fileRequest.Count; i++)
                 {
-                    file.SaveAs(Path.Combine(Server.MapPath(directory), fileName));
-                    string fullImgPath = Server.MapPath(directory) + '/' + fileName;
                     try
                     {
-                        await GetDetectedFaces(fileName, userName);
-
-                        while (true)
-                        {
-                            if (isComplete)
-                            {
-                                break;
-                            }
-                        }
-                    }
-                    catch (FaceAPIException ex)
-                    {
-                        string ErrorCode = ex.ErrorCode;
-                    }
-
-                    //User Binding原圖
-                    using (Stream imgStream = System.IO.File.OpenRead(fullImgPath))
-                    {
+                        var file = fileRequest[i];
+                        fileName = DateTime.UtcNow.AddHours(8).ToString("yyyyMMddHHmmss") + Path.GetExtension(file.FileName);
+                        int size = file.ContentLength;
+                        file.SaveAs(Path.Combine(Server.MapPath(directory), fileName));
+                        string fullImgPath = Server.MapPath(directory) + '/' + fileName;
                         try
                         {
-                            await faceModel.serviceClient.AddPersonFaceAsync(faceModel.personGroupId, personId.Value, imgStream);
-                            await faceModel.serviceClient.TrainPersonGroupAsync(faceModel.personGroupId);
-                            message = "新增成功！";
-                            flag = true;
+                            await GetDetectedFaces(fileName, userName);
                         }
                         catch (FaceAPIException ex)
                         {
-                            message = ex.ErrorMessage;
+                            string ErrorCode = ex.ErrorCode;
+                        }
+
+                        //User Binding原圖
+                        using (Stream imgStream = System.IO.File.OpenRead(fullImgPath))
+                        {
+                            try
+                            {
+                                await faceModel.serviceClient.AddPersonFaceAsync(faceModel.personGroupId, personId.Value, imgStream);
+                                await faceModel.serviceClient.TrainPersonGroupAsync(faceModel.personGroupId);
+                                message = "新增成功！";
+                                flag = true;
+                            }
+                            catch (FaceAPIException ex)
+                            {
+                                message = ex.ErrorMessage;
+                            }
                         }
                     }
-
-                }
-                catch (Exception)
-                {
-                    message = "發生錯誤！";
+                    catch (Exception)
+                    {
+                        message = "發生錯誤！";
+                    }
                 }
             }
             return new JsonResult
@@ -115,7 +107,6 @@ namespace FaceAPI.Web.Controllers
             };
         }
 
-        [HttpGet]
         public async Task GetDetectedFaces(string uplImageName, string userName)
         {
             string fullImgPath = Server.MapPath(directory) + '/' + uplImageName;
@@ -221,7 +212,7 @@ namespace FaceAPI.Web.Controllers
                 }
                 finally
                 {
-                    isComplete = true;
+                    //isComplete = true;
                 }
             }
         }

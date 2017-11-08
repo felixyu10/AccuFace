@@ -4,16 +4,12 @@
 
     $scope.DetectedResultsMessage = '';
     $scope.SelectedFileForUpload = null;
-    $scope.Uploaded = [];
-    $scope.SimilarFace = [];
-    $scope.FaceRectangles = [];
-    $scope.DetectedFaces = [];
 
     //File Select & Save 
-    $scope.selectCandidateFileforUpload = function (file) {
+    $scope.selectCandidateFileforUpload = function ($file) {
 
         $('.loadmore').css("display", "block");
-        $scope.SelectedFileForUpload = file;
+        $scope.SelectedFileForUpload = $file;
         $scope.loaderMoreupl = true;
         $scope.uplMessage = '新增中...';
         $scope.result = "color-green";
@@ -23,18 +19,25 @@
             $("[name=file]").val("")
             return;
         }
-        gtag('event', 'CreateUser');
-        var uploaderUrl = "/User/Create?userName=" + $("[name=userName]").val();
-        var fileSave = FileUploadService.UploadFile($scope.SelectedFileForUpload, uploaderUrl);
-        fileSave.then(function (response) {
-            $scope.loaderMoreupl = false;
-            alertify.success("新增成功");
-            $("[name=userName]").val("")
-            $("[name=file]").val("")
-        },
-        function (error) {
-            console.warn("Error: " + error);
-        });
+        else {
+            gtag('event', 'CreateUser');
+            var uploaderUrl = "/User/Create?userName=" + $("[name=userName]").val();
+            var fileSave = FileUploadService.UploadFile($scope.SelectedFileForUpload, uploaderUrl);
+            fileSave.then(function (response) {
+                $scope.loaderMoreupl = false;
+                $("[name=userName]").val("")
+                $("[name=file]").val("")
+                if (response.data.Status) {
+                    alertify.success("新增成功");
+                }
+                else {
+                    alertify.error("發生錯誤");
+                }
+            },
+            function (error) {
+                alertify.error("發生錯誤");
+            });
+        }
     }
 })
 .factory('FileUploadService', function ($http, $q) {

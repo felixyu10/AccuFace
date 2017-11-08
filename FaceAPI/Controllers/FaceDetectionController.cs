@@ -122,8 +122,9 @@ namespace FaceAPI.Web.Controllers
                             });
 
 
-                        detectedResultsInText = string.Format("偵測到{0}個人臉", faces.Length);
+                        detectedResultsInText = string.Format("有{0}個人臉", faces.Length);
                         Bitmap cropFace = null;
+
                         if (faces != null)
                         {
                             List<string> items = new List<string>();

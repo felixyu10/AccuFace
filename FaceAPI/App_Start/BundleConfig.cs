@@ -19,8 +19,8 @@ namespace FaceAPI.Web
                                         "~/Scripts/angular/angular.min.js"));
 
             bundles.Add(new StyleBundle("~/Content/base/css").Include(
-                                        "~/Content/Site.css",
-                                        "~/Content/bootstrap.min.css"));
+                                        "~/Content/bootstrap.min.css",
+                                        "~/Content/site.css"));
 
             //alertify
             bundles.Add(new ScriptBundle("~/bundles/alertify/js").Include(

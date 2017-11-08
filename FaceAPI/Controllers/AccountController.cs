@@ -2,6 +2,7 @@
 using FaceAPI.Web.Common.Enum;
 using FaceAPI.Web.Models;
 using System;
+using System.Collections.Generic;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
@@ -21,16 +22,19 @@ namespace FaceAPI.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Login(AccountModel.LoginModel model)
         {
-            if ((model.Account == "admin" || model.Account == "felix") && model.Password == "accuvally")
-            {
-                if (model.Account == "admin" && model.Password == "accuvally")
-                {
+            Dictionary<string, string> accountDic = new Dictionary<string, string>();
+            accountDic.Add("admin", "accuvally");
+            accountDic.Add("felix", "accuvally");
+            accountDic.Add("microsoft", "poiuzxcv");
 
+            if (accountDic.ContainsKey(model.Account) && accountDic[model.Account] == model.Password)
+            {
+                if (model.Account == "admin" || model.Account == "microsoft")
+                {
                     int login = RedisCache.GetCache<int>(CacheNameEnum.FaceDetection, "");
                     login++;
-                    RedisCache.SetCache(CacheNameEnum.FaceDetection, "", login, new TimeSpan(365, 0, 0, 0));
+                    RedisCache.SetCache(CacheNameEnum.FaceDetection, model.Account, login, new TimeSpan(100, 0, 0, 0));
                 }
-
 
                 FormsAuthenticationTicket ticket = new FormsAuthenticationTicket(1,
                     model.Account,

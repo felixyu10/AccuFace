@@ -10,19 +10,21 @@
     <div class="clearfix"></div>
 
     <div class="col-xs-12 m-b-20">
-        <h4>
-            <b>新增使用者</b>
-        </h4>
         <form novalidate name="f1">
             <div class="form-group m-b-20">
-                <input type="text" name="userName" placeholder="名稱" class="form-control" required />
+                <b>名稱</b>
+                <br>
+                <input type="text" name="userName" 　class="form-control" required />
             </div>
 
             <div class="form-group m-b-20">
-                <b>照片</b>
+                <b>照片（可上傳多張）</b>
                 <br>
-                <input type="file" name="file" accept="image/*" onchange="angular.element(this).scope().selectCandidateFileforUpload(this.files)" required />
+                <input type="file" name="file" accept="image/*" onchange="angular.element(this).scope().selectCandidateFileforUpload(this.files)" ng-file-model="files" multiple required />
+
             </div>
+            @*<input type="button" id="SaveSnap" class="btn btn-primary m-t-10" value="新增"
+                onclick="angular.element(this).scope().selectCandidateFileforUpload(this)" />*@
 
         </form>
     </div>

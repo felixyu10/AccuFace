@@ -40,7 +40,7 @@
     //Get Detected Faces
     $scope.GetDetectedFaces = function () {
         $scope.loaderMore = true;
-        $scope.faceMessage = '辨識人臉中，請稍後...';
+        $scope.faceMessage = '辨識中，請稍後...';
         $scope.result = "color-green";
 
         var fileUrl = "/FaceDetection/GetDetectedFaces";
@@ -108,14 +108,31 @@
     var width;
     var height;
 
-    if ($(window).width() >= 768) {
-        width = 480;
-        height = 400;
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        width = $(window).width();
+        height = width * 0.8;
+        alert(width);
+        alert(height);
     }
     else {
-        width = 400;
-        height = 320;
+        if ($(window).width() > 480) {
+            width = 480;
+            height = 400;
+        }
+        else {
+            width = $(window).width() - 30;
+            height = width * 0.8;
+        }
     }
+
+    //if ($(window).width() >= 768) {
+    //    width = 480;
+    //    height = 400;
+    //}
+    //else {
+    //    width = 400;
+    //    height = 320;
+    //}
 
     $(window).load(function () {
         Webcam.set({
@@ -130,16 +147,19 @@
     });
 
     $(window).resize(function () {
-        if ($(window).width() >= 768) {
+        if ($(window).width() > 480) {
             width = 480;
             height = 400;
         }
         else {
-            width = 400;
-            height = 320;
+            width = $(window).width() - 30;
+            height = width * 0.8;
         }
         $("video").css("width", width + "px")
         $("video").css("height", height + "px")
+
+        $("#webcam").css("width", width + "px")
+        $("#webcam").css("height", height + "px")
     });
 
     $scope.DetectedResultsMessage = '';

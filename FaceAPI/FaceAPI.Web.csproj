@@ -146,10 +146,12 @@
     <Content Include="Content\alertify\alertify.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\ng-loader.gif" />
-    <Content Include="Content\Site.css" />
+    <Content Include="Content\site.css" />
     <Content Include="Content\alertify\default.css" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
+    <Content Include="Images\pic2.jpg" />
+    <Content Include="Images\pic.png" />
     <Content Include="Images\icon.png" />
     <Content Include="Scripts\jquery\jquery.validate.min.js" />
     <Content Include="Scripts\jquery\jquery.validate.unobtrusive.min.js" />
