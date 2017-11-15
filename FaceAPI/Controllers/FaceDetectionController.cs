@@ -186,6 +186,27 @@ namespace FaceAPI.Web.Controllers
                                             }
                                         }
                                     }
+                                    cropFace.Dispose();
+
+                                    bool hair = face.FaceAttributes.Hair.HairColor.Any();
+
+                                    detectedFaces.Add(new FaceDetectionModel()
+                                    {
+                                        PersonName = personName,
+                                        ImagePath = fullImgPath,
+                                        FileName = cropImgFileName,
+                                        FilePath = cropImgPath,
+                                        Left = face.FaceRectangle.Left,
+                                        Top = face.FaceRectangle.Top,
+                                        Width = face.FaceRectangle.Width,
+                                        Height = face.FaceRectangle.Height,
+                                        Gender = face.FaceAttributes.Gender == "male" ? "男" : "女",
+                                        Age = string.Format("{0:#}歲", face.FaceAttributes.Age),
+                                        //IsSmiling = face.FaceAttributes.Smile > 0.0 ? "有" : "沒有",
+                                        Emotion = face.FaceAttributes.Emotion.ToRankedList().OrderByDescending(o => o.Value).FirstOrDefault().Key,
+                                        Hair = hair? face.FaceAttributes.Hair.HairColor.OrderByDescending(o => o.Confidence).FirstOrDefault().Color.ToString() : "None",
+                                        Confidence = confidence
+                                    });
                                 }
                                 catch (FaceAPIException ex)
                                 {
@@ -193,25 +214,6 @@ namespace FaceAPI.Web.Controllers
                                     string ErrorMessage = ex.ErrorMessage;
                                     //do exception work
                                 }
-                                cropFace.Dispose();
-
-                                detectedFaces.Add(new FaceDetectionModel()
-                                {
-                                    PersonName = personName,
-                                    ImagePath = fullImgPath,
-                                    FileName = cropImgFileName,
-                                    FilePath = cropImgPath,
-                                    Left = face.FaceRectangle.Left,
-                                    Top = face.FaceRectangle.Top,
-                                    Width = face.FaceRectangle.Width,
-                                    Height = face.FaceRectangle.Height,
-                                    Gender = face.FaceAttributes.Gender == "male" ? "男" : "女",
-                                    Age = string.Format("{0:#}歲", face.FaceAttributes.Age),
-                                    //IsSmiling = face.FaceAttributes.Smile > 0.0 ? "有" : "沒有",
-                                    Emotion = face.FaceAttributes.Emotion.ToRankedList().OrderByDescending(o => o.Value).FirstOrDefault().Key,
-                                    Hair = face.FaceAttributes.Hair.HairColor.OrderByDescending(o => o.Confidence).FirstOrDefault().Color.ToString(),
-                                    Confidence = confidence
-                                });
 
                             }
                         }

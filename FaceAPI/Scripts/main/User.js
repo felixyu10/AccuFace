@@ -4,6 +4,10 @@
 
     $scope.DetectedResultsMessage = '';
     $scope.SelectedFileForUpload = null;
+    $scope.Uploaded = [];
+    $scope.SimilarFace = [];
+    $scope.FaceRectangles = [];
+    $scope.DetectedFaces = [];
 
     //File Select & Save 
     $scope.selectCandidateFileforUpload = function ($file) {

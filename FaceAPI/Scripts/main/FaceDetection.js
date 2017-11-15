@@ -39,6 +39,7 @@
 
     //Get Detected Faces
     $scope.GetDetectedFaces = function () {
+
         $scope.loaderMore = true;
         $scope.faceMessage = '辨識中，請稍後...';
         $scope.result = "color-green";
@@ -55,10 +56,8 @@
             $scope.FaceRectangles = response.data.FaceRectangles;
             $scope.loaderMore = false;
 
-            //Reset element
             $('#faceCanvas_img').remove();
             $('.Rectangle_box').remove();
-
 
             //get element byID
             var canvas = document.getElementById('faceCanvas');
@@ -111,8 +110,6 @@
     if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
         width = $(window).width();
         height = width * 0.8;
-        alert(width);
-        alert(height);
     }
     else {
         if ($(window).width() > 480) {
