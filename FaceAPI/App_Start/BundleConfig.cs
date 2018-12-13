@@ -13,8 +13,7 @@ namespace FaceAPI.Web
                                         "~/Scripts/jquery/jquery.validate.min.js",
                                         "~/Scripts/jquery/jquery.validate.unobtrusive.min.js",
                                         "~/Scripts/modernizr-2.6.2.js",
-                                        "~/Scripts/bootstrap.min.js",
-                                        "~/Scripts/angular/angular.min.js"));
+                                        "~/Scripts/bootstrap.min.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                                         "~/Content/Site.css",

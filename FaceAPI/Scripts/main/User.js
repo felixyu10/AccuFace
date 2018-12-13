@@ -24,14 +24,16 @@
             return;
         }
 
-        var uploaderUrl = "/User/UploadPhoto?userName=" + $("[name=userName]").val();
+        var uploaderUrl = "/User/Create?userName=" + $("[name=userName]").val();
         var fileSave = FileUploadService.UploadFile($scope.SelectedFileForUpload, uploaderUrl);
         fileSave.then(function (response) {
+            alert(response)
             $scope.loaderMoreupl = false;
             $scope.uplMessage = '新增成功';
         },
         function (error) {
-            console.warn("Error: " + error);
+
+            alert("Error: " + error);
         });
     }
 })

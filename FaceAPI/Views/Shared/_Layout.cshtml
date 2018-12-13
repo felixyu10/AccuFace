@@ -10,7 +10,7 @@
     @Scripts.Render("~/bundles/base/js")
     @Styles.Render("~/Content/css")
 </head>
-<body ng-app="myFaceApp" class="ng-cloak">
+<body>
 
     @Html.Partial("~/Views/Shared/_Header.cshtml")
 
@@ -24,7 +24,5 @@
         @RenderBody()
     </div>
     @Html.Partial("~/Views/Shared/_Footer.cshtml")
-
-    @RenderSection("NgScript", false)
 </body>
 </html>

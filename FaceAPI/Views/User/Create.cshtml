@@ -1,10 +1,39 @@
 ﻿@using System.Web.Optimization
 
-<div ng-controller="User">
+<script>
+    $(document).ready(function () {
+
+        $("#but_upload").click(function () {
+
+            var fd = new FormData();
+            var userName = $("[name=userName]").val();
+            var files = $('[name=file]')[0].files[0];
+            fd.append('file', files);
+
+            $.ajax({
+                url: '/User/Create?userName=' + userName,
+                type: 'post',
+                data: fd,
+                async: false,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    if (response != 0) {
+                        $("#img").attr("src", response);
+                        $(".preview img").show(); // Display image element
+                    } else {
+                        alert('file not uploaded');
+                    }
+                },
+            });
+        });
+    });
+</script>
+<div>
 
     <div class="loadmore">
-        <div ng-show="loaderMoreupl" ng-class="result">
-            <img src="~/Content/ng-loader.gif" /> {{uplMessage}}
+        <div>
+            <img src="~/Content/ng-loader.gif" style="display:none" />
         </div>
     </div>
     <div class="clearfix"></div>
@@ -13,23 +42,21 @@
         <h4>
             <b>新增使用者</b>
         </h4>
-        <form novalidate name="f1">
-            <div class="form-group m-b-20">
-                <input type="text" name="userName" placeholder="名稱" class="form-control" required />
-            </div>
+        <div class="form-group m-b-20">
+            <input type="text" name="userName" placeholder="名稱" class="form-control" required="required" />
+        </div>
 
-            <div class="form-group m-b-20">
-                <b>照片</b>
-                <br>
-                <input type="file" name="file" accept="image/*" onchange="angular.element(this).scope().selectCandidateFileforUpload(this.files)" required />
-            </div>
-
-        </form>
+        <div class="form-group m-b-20">
+            <b>照片</b>
+            <br>
+            <input type="file" name="file" accept="image/*" required="required" />
+        </div>
+        <input type="button" value="送出" id="but_upload">
     </div>
 
 
 </div>
 
-@section NgScript{
-    <script src="~/Scripts/main/User.js"></script>
-}
+@*@section NgScript{
+        <script src="~/Scripts/main/User.js"></script>
+    }*@

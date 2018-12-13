@@ -88,9 +88,35 @@ namespace FaceAPI.Web.Controllers
             };
         }
 
-        [HttpGet]
+        [HttpPost]
         public async Task<dynamic> GetDetectedFaces()
         {
+            try {
+                PersonGroup group = await faceModel.serviceClient.GetPersonGroupAsync(faceModel.personGroupId);
+            } catch (FaceAPIException ex) {
+                if (ex.ErrorCode == "PersonGroupNotFound") {
+                    //加入人員群組
+                    await faceModel.serviceClient.CreatePersonGroupAsync(faceModel.personGroupId, "Accupass");
+                }
+            }
+            string message = string.Empty;
+            string fileName = string.Empty;
+            //Requested File Collection
+            HttpFileCollection fileRequest = System.Web.HttpContext.Current.Request.Files;
+            if (fileRequest != null) {
+                HttpPostedFileBase file = Request.Files[0];
+                fileName = DateTime.UtcNow.AddHours(8).ToString("yyyyMMddHHmmss") + Path.GetExtension(file.FileName);
+                int size = file.ContentLength;
+
+                try {
+                    file.SaveAs(Path.Combine(Server.MapPath(directory), fileName));
+                    message = "上傳成功！";
+                    uplImageName = fileName;
+                } catch (Exception e) {
+                    message = "上傳失敗！";
+                }
+            }
+
 
             resultCollection.Clear();
             detectedFaces.Clear();

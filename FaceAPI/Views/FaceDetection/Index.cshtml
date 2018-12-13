@@ -1,62 +1,81 @@
 ﻿@using System.Web.Optimization
 
-<div ng-controller="faceDetection">
+<script>
+    $(document).ready(function () {
 
-    <div class="loadmore">
-        <div ng-show="loaderMoreupl" ng-class="result">
-            <img src="~/Content/ng-loader.gif" /> {{uplMessage}}
-        </div>
-    </div>
-    <div class="clearfix"></div>
+        $("#but_upload").click(function () {
 
-    <div class="col-md-2 col-xs-12 m-b-20">
-        <h4>
-            <b>照片</b>
-        </h4>
-        <form novalidate name="f1">
-            <input type="file" name="file" accept="image/*" onchange="angular.element(this).scope().selectCandidateFileforUpload(this.files)" required />
-        </form>
-    </div>
-    <div class="col-md-10 col-xs-12 m-b-20">
-        <h4>
-            <b>辨識結果</b>
-        </h4>
-        <div class="col-md-6 col-xs-12">
-            <div class="loadmore">
-                <div ng-show="loaderMore" ng-class="result">
-                    <img src="~/Content/ng-loader.gif" /> {{faceMessage}}
-                </div>
-            </div>
-            <div class="clearfix"></div>
-            <div class="facePreview_thumb_big" id="faceCanvas">
-            </div>
-        </div>
-        <div class="col-md-6 col-xs-12">
-            <h5 class="color-green m-b-0">{{DetectedResultsMessage}}</h5>
-            <hr class="facePreview_hr">
-            <div class="facePreview_thumb_small">
-                <div ng-repeat="item in DetectedFaces">
-                    <div class="col-xs-5">
-                        <img ng-src="{{item.FilePath}}" style="width:100%" />
-                    </div>
-                    <div class="col-xs-7">
-                        <ul>
-                            <li>名稱：{{item.PersonName}}</li>
-                            <li>年齡：{{item.Age}}</li>
-                            <li>性別：{{item.Gender}}</li>
-                            <li>微笑：{{item.IsSmiling}}</li>
-                            <li>情緒：{{item.Emotion}}</li>
-                        </ul>
-                    </div>
-                    <div class="clearfix"></div>
-                </div>
-            </div>
-            <div ng-hide="DetectedFaces.length"></div>
-        </div>
-    </div>
+            var fd = new FormData();
+            var files = $('[name=file]')[0].files[0];
+            fd.append('file', files);
 
+            $.ajax({
+                url: '/FaceDetection/GetDetectedFaces',
+                type: 'post',
+                data: fd,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    if (response != 0) {
+                        alert(response.Data);
+                        alert(response.Data.DetectedResults);
+                    } else {
+                        alert('file not uploaded');
+                    }
+                },
+            });
+        });
+    });
+</script>
+
+<div class="loadmore">
+    <div>
+        <img src="~/Content/ng-loader.gif" style="display:none" />
+    </div>
+</div>
+<div class="clearfix"></div>
+
+<div class="col-md-2 col-xs-12 m-b-20">
+    <h4>
+        <b>照片</b>
+    </h4>
+    <input type="file" name="file" accept="image/*" required="required" />
+    <input type="button" value="送出" id="but_upload">
 </div>
 
-@section NgScript{
-    <script src="~/Scripts/main/FaceDetection.js"></script>
-}
+<div class="col-md-10 col-xs-12 m-b-20">
+    <h4>
+        <b>辨識結果</b>
+    </h4>
+    <div class="col-md-6 col-xs-12">
+        <div class="loadmore">
+            <div>
+                <img src="~/Content/ng-loader.gif" style="display:none" />
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <div class="facePreview_thumb_big" id="faceCanvas">
+        </div>
+    </div>
+    <div class="col-md-6 col-xs-12">
+        <h5 class="color-green m-b-0" id="DetectedResultsMessage">{{DetectedResultsMessage}}</h5>
+        <hr class="facePreview_hr">
+        <div class="facePreview_thumb_small">
+            <div ng-repeat="item in DetectedFaces">
+                <div class="col-xs-5">
+                    <img ng-src="{{item.FilePath}}" style="width:100%" />
+                </div>
+                <div class="col-xs-7">
+                    <ul>
+                        <li>名稱：{{item.PersonName}}</li>
+                        <li>年齡：{{item.Age}}</li>
+                        <li>性別：{{item.Gender}}</li>
+                        <li>微笑：{{item.IsSmiling}}</li>
+                        <li>情緒：{{item.Emotion}}</li>
+                    </ul>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+</div>
