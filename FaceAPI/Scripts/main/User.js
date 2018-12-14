@@ -24,23 +24,28 @@
             return;
         }
         else {
-            gtag('event', 'CreateUser');
-            var uploaderUrl = "/User/Create?userName=" + $("[name=userName]").val();
-            var fileSave = FileUploadService.UploadFile($scope.SelectedFileForUpload, uploaderUrl);
-            fileSave.then(function (response) {
-                $scope.loaderMoreupl = false;
-                $("[name=userName]").val("")
-                $("[name=file]").val("")
-                if (response.data.Status) {
-                    alertify.success("新增成功");
-                }
-                else {
-                    alertify.error("發生錯誤");
-                }
-            },
-            function (error) {
-                alertify.error("發生錯誤");
-            });
+            try {
+                var uploaderUrl = "/User/Create?userName=" + $("[name=userName]").val();
+                var fileSave = FileUploadService.UploadFile($scope.SelectedFileForUpload, uploaderUrl);
+                fileSave.then(function (response) {
+                    alert("Status: " + response.data.Status)
+                    $scope.loaderMoreupl = false;
+                    $("[name=userName]").val("")
+                    $("[name=file]").val("")
+                    if (response.data.Status) {
+                        alertify.success("新增成功");
+                    }
+                    else {
+                        alertify.error("發生錯誤");
+                    }
+                }, function (error) {
+                    alert("Fail: " + error);
+                });
+            }
+            catch (e) {
+                console.log("Got an error!", e);
+                throw e; // rethrow to not marked as handled
+            }
         }
     }
 })
@@ -59,9 +64,11 @@
             headers: { 'Content-Type': undefined },
             transformRequest: angular.identity
         });
+
         return request;
     }
     fact.GetUploadedFile = function (fileUrl) {
+        alert('fileUrl:' + fileUrl)
         return $http.get(fileUrl);
     }
     return fact;

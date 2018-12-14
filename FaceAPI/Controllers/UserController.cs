@@ -90,7 +90,7 @@ namespace FaceAPI.Web.Controllers
                             }
                         }
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
                         message = "發生錯誤！";
                     }

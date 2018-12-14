@@ -33,7 +33,7 @@
             }
         },
         function (error) {
-            console.warn("Error: " + error);
+        alert("UploadFile 發生錯誤: " + error);
         });
     }
 
@@ -48,6 +48,7 @@
         var fileView = FileUploadService.GetUploadedFile(fileUrl);
 
         fileView.then(function (response) {
+            alert(response);
             $('.loadmore').css("display", "none");
             $('.facePreview_hr').css("display", "block");
             $scope.QueryFace = response.data.QueryFaceImage;
@@ -93,7 +94,7 @@
             });
         },
         function (error) {
-            console.warn("Error: " + error);
+            alert("GetDetectedFaces 發生錯誤: " + error);
         });
     };
 

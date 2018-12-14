@@ -20,13 +20,13 @@ namespace FaceAPI.Web.Controllers
 {
     public class FaceDetectionController : BaseController
     {
-        private static string directory = AppHelper.GetWebConfigSetting("UploadedDirectory");
-        private static string uplImageName = string.Empty;
-        private int maxImageSize = 450;
-        private ObservableCollection<FaceDetectionModel> detectedFaces = new ObservableCollection<FaceDetectionModel>();
-        private ObservableCollection<FaceDetectionModel> resultCollection = new ObservableCollection<FaceDetectionModel>();
-        private FaceDetectionService service = new FaceDetectionService();
-        private FaceModel faceModel = new FaceModel();
+        private static string _directory = AppHelper.GetWebConfigSetting("UploadedDirectory");
+        private static string _uplImageName = string.Empty;
+        private int _maxImageSize = 450;
+        private ObservableCollection<FaceDetectionModel> _detectedFaces = new ObservableCollection<FaceDetectionModel>();
+        private ObservableCollection<FaceDetectionModel> _resultCollection = new ObservableCollection<FaceDetectionModel>();
+        private FaceDetectionService _faceService = new FaceDetectionService();
+        private FaceModel _faceModel = new FaceModel();
 
         [HttpGet]
         public ActionResult Index()
@@ -45,14 +45,14 @@ namespace FaceAPI.Web.Controllers
         {
             try
             {
-                PersonGroup group = await faceModel.serviceClient.GetPersonGroupAsync(faceModel.personGroupId);
+                PersonGroup group = await _faceModel.serviceClient.GetPersonGroupAsync(_faceModel.personGroupId);
             }
             catch (FaceAPIException ex)
             {
                 if (ex.ErrorCode == "PersonGroupNotFound")
                 {
                     //加入人員群組
-                    await faceModel.serviceClient.CreatePersonGroupAsync(faceModel.personGroupId, "Accupass");
+                    await _faceModel.serviceClient.CreatePersonGroupAsync(_faceModel.personGroupId, "Accupass");
                 }
             }
             string message = string.Empty;
@@ -68,9 +68,9 @@ namespace FaceAPI.Web.Controllers
 
                 try
                 {
-                    file.SaveAs(Path.Combine(Server.MapPath(directory), fileName));
+                    file.SaveAs(Path.Combine(Server.MapPath(_directory), fileName));
                     message = "上傳成功！";
-                    uplImageName = fileName;
+                    _uplImageName = fileName;
                     flag = true;
                 }
                 catch (Exception e)
@@ -92,16 +92,15 @@ namespace FaceAPI.Web.Controllers
         [HttpGet]
         public async Task<dynamic> GetDetectedFaces()
         {
-
-            resultCollection.Clear();
-            detectedFaces.Clear();
+            _resultCollection.Clear();
+            _detectedFaces.Clear();
 
             string detectedResultsInText = "辨識中...";
-            string fullImgPath = Server.MapPath(directory) + '/' + uplImageName;
-            string queryFaceImageUrl = directory + '/' + uplImageName;
+            string fullImgPath = Server.MapPath(_directory) + '/' + _uplImageName;
+            string queryFaceImageUrl = _directory + '/' + _uplImageName;
 
 
-            if (!string.IsNullOrWhiteSpace(uplImageName))
+            if (!string.IsNullOrWhiteSpace(_uplImageName))
             {
                 try
                 {
@@ -110,7 +109,7 @@ namespace FaceAPI.Web.Controllers
                     {
                         // User picked one image
                         var imageInfo = UIHelper.GetImageInfoForRendering(fullImgPath);
-                        Face[] faces = await faceModel.serviceClient.DetectAsync(fStream,
+                        Face[] faces = await _faceModel.serviceClient.DetectAsync(fStream,
                             true,
                             true,
                             new FaceAttributeType[]
@@ -134,11 +133,11 @@ namespace FaceAPI.Web.Controllers
                                 index++;
 
                                 //Create & Save crop Images
-                                string cropImgFileName = string.Format("{0}_Crop{1}.jpg", uplImageName, index);
-                                string cropImgPath = directory + '/' + cropImgFileName;
-                                string cropImgFullPath = Server.MapPath(directory) + '/' + cropImgFileName;
+                                string cropImgFileName = string.Format("{0}_Crop{1}.jpg", _uplImageName, index);
+                                string cropImgPath = _directory + '/' + cropImgFileName;
+                                string cropImgFullPath = Server.MapPath(_directory) + '/' + cropImgFileName;
 
-                                cropFace = service.CropBitmap(
+                                cropFace = _faceService.CropBitmap(
                                                 (Bitmap)Image.FromFile(fullImgPath),
                                                 face.FaceRectangle.Left,
                                                 face.FaceRectangle.Top,
@@ -151,7 +150,8 @@ namespace FaceAPI.Web.Controllers
                                 double? confidence = null;
                                 try
                                 {
-                                    IdentifyResult[] identify = await faceModel.serviceClient.IdentifyAsync(faceModel.personGroupId, faceIds);
+                                    await _faceModel.serviceClient.TrainPersonGroupAsync(_faceModel.personGroupId);
+                                    IdentifyResult[] identify = await _faceModel.serviceClient.IdentifyAsync(_faceModel.personGroupId, faceIds);
 
 
                                     if (identify[0].Candidates.Length > 0)
@@ -162,7 +162,7 @@ namespace FaceAPI.Web.Controllers
                                             if (confidence > 0.7)
                                             {
                                                 Guid personId = identify[0].Candidates[j].PersonId;
-                                                Person person = await faceModel.serviceClient.GetPersonAsync(faceModel.personGroupId, personId);
+                                                Person person = await _faceModel.serviceClient.GetPersonAsync(_faceModel.personGroupId, personId);
                                                 personName = person.Name;
 
                                                 //User Binding原圖
@@ -170,8 +170,8 @@ namespace FaceAPI.Web.Controllers
                                                 {
                                                     using (Stream img = System.IO.File.OpenRead(fullImgPath))
                                                     {
-                                                        await faceModel.serviceClient.AddPersonFaceAsync(faceModel.personGroupId, person.PersonId, img);
-                                                        await faceModel.serviceClient.TrainPersonGroupAsync(faceModel.personGroupId);
+                                                        await _faceModel.serviceClient.AddPersonFaceAsync(_faceModel.personGroupId, person.PersonId, img);
+                                                        await _faceModel.serviceClient.TrainPersonGroupAsync(_faceModel.personGroupId);
                                                     }
                                                 }
                                                 //User Binding裁切圖
@@ -179,8 +179,8 @@ namespace FaceAPI.Web.Controllers
                                                 {
                                                     using (Stream img = System.IO.File.OpenRead(cropImgFullPath))
                                                     {
-                                                        await faceModel.serviceClient.AddPersonFaceAsync(faceModel.personGroupId, person.PersonId, img);
-                                                        await faceModel.serviceClient.TrainPersonGroupAsync(faceModel.personGroupId);
+                                                        await _faceModel.serviceClient.AddPersonFaceAsync(_faceModel.personGroupId, person.PersonId, img);
+                                                        await _faceModel.serviceClient.TrainPersonGroupAsync(_faceModel.personGroupId);
                                                     }
                                                 }
                                             }
@@ -190,7 +190,7 @@ namespace FaceAPI.Web.Controllers
 
                                     bool hair = face.FaceAttributes.Hair.HairColor.Any();
 
-                                    detectedFaces.Add(new FaceDetectionModel()
+                                    _detectedFaces.Add(new FaceDetectionModel()
                                     {
                                         PersonName = personName,
                                         ImagePath = fullImgPath,
@@ -210,8 +210,13 @@ namespace FaceAPI.Web.Controllers
                                 }
                                 catch (FaceAPIException ex)
                                 {
-                                    string ErrorCode = ex.ErrorCode;
-                                    string ErrorMessage = ex.ErrorMessage;
+                                    if (ex.ErrorCode == "PersonGroupNotTrained") {
+                                        await _faceModel.serviceClient.TrainPersonGroupAsync(_faceModel.personGroupId);
+                                    } else {
+
+                                        string ErrorCode = ex.ErrorCode;
+                                        string ErrorMessage = ex.ErrorMessage;
+                                    }
                                     //do exception work
                                 }
 
@@ -219,10 +224,10 @@ namespace FaceAPI.Web.Controllers
                         }
 
                         // Convert detection result into UI binding object for rendering
-                        var rectFaces = UIHelper.CalculateFaceRectangleForRendering(faces, maxImageSize, imageInfo);
+                        var rectFaces = UIHelper.CalculateFaceRectangleForRendering(faces, _maxImageSize, imageInfo);
                         foreach (var face in rectFaces)
                         {
-                            resultCollection.Add(face);
+                            _resultCollection.Add(face);
                         }
                     }
                 }
@@ -238,9 +243,9 @@ namespace FaceAPI.Web.Controllers
                 Data = new
                 {
                     QueryFaceImage = queryFaceImageUrl,
-                    MaxImageSize = maxImageSize,
-                    FaceInfo = detectedFaces,
-                    FaceRectangles = resultCollection,
+                    MaxImageSize = _maxImageSize,
+                    FaceInfo = _detectedFaces,
+                    FaceRectangles = _resultCollection,
                     DetectedResults = detectedResultsInText
                 },
                 JsonRequestBehavior = JsonRequestBehavior.AllowGet
@@ -257,8 +262,8 @@ namespace FaceAPI.Web.Controllers
                 string imgUrl = System.Web.HttpContext.Current.Request["imgUrl"];
                 imgUrl = imgUrl.Substring("data:image/jpeg;base64,".Length);
                 byte[] buffer = Convert.FromBase64String(imgUrl);
-                uplImageName = string.Format("{0}.jpg", DateTime.UtcNow.AddHours(8).ToString("yyyyMMddHHmmss"));
-                fullImgPath = string.Format("~/Uploaded/{0}", uplImageName);
+                _uplImageName = string.Format("{0}.jpg", DateTime.UtcNow.AddHours(8).ToString("yyyyMMddHHmmss"));
+                fullImgPath = string.Format("~/Uploaded/{0}", _uplImageName);
                 System.IO.File.WriteAllBytes(Server.MapPath(fullImgPath), buffer);
 
             }
@@ -270,7 +275,7 @@ namespace FaceAPI.Web.Controllers
             {
                 Data = new
                 {
-                    UplImageName = uplImageName,
+                    UplImageName = _uplImageName,
                     Status = flag
                 }
             };
